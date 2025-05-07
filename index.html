@@ -9,7 +9,7 @@
       margin: 0;
       height: 100vh;
       background: #000;
-      background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAAB...'); /* base64 fully inlined */
+      background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAAB...'); /* background logo image (shortened) */
       background-size: cover;
       background-position: center;
       overflow: hidden;
@@ -22,6 +22,7 @@
       top: 0;
       left: 0;
       z-index: 0;
+      pointer-events: none;
     }
 
     .content {
@@ -37,15 +38,11 @@
     }
 
     .code {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 1rem;
-      border-radius: 8px;
       color: #ff99ff;
       font-family: monospace;
       font-size: 1rem;
       margin-bottom: 1rem;
-      white-space: pre-wrap;
-      word-break: break-word;
+      text-shadow: 0 0 10px #ff00ff;
     }
 
     .btn {
@@ -68,6 +65,7 @@
       position: absolute;
       top: 1rem;
       right: 1rem;
+      z-index: 2;
     }
   </style>
 </head>
@@ -91,6 +89,10 @@
       });
     }
 
+    // Logo particle image
+    const logoImg = new Image();
+    logoImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfMAAAHzCAYAAAA0D/RLAAEAAElEQVR4nOy9d5hlWVmo/66w0wkVuzrnODnPwIBIULxX5aoEJSpRyZjAhKggGDAiJkTFiOEK3nt/Nxm4KBkGmNw93TPTOVeuk3ZYa32/P3Z1zwDDiNg90z1z3uepZ9c5p+rsvVfY3/q+9QXFkCFDHlWezbdL26SMJCNMtaZYN76GtWNrmGhNsKIxiQoGJRalDAqDUgpRCi0GEyxaFCICgIic/R0ghPBVzxsUy98FohQASi9/qOvX/byHUgpM";
+
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -99,7 +101,6 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
-
     window.addEventListener('resize', resize);
     resize();
 
@@ -111,29 +112,28 @@
       reset() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.size = Math.random() * 2 + 1;
-        this.color = `rgba(255, 0, 255, ${Math.random()})`;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.size = Math.random() * 20 + 10;
       }
 
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+        if (this.x < -this.size || this.x > canvas.width + this.size ||
+            this.y < -this.size || this.y > canvas.height + this.size) {
           this.reset();
         }
       }
 
       draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+        if (logoImg.complete) {
+          ctx.drawImage(logoImg, this.x, this.y, this.size, this.size);
+        }
       }
     }
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 40; i++) {
       particles.push(new Particle());
     }
 
